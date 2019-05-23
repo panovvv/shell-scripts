@@ -1,0 +1,2 @@
+DOWNLOAD FFMPEG AND EXTRACT IT TO BINARIES FOLDER.
+And read README.txt - it's got it all.
