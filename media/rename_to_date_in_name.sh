@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# * Works with JPG files, extension is case-insensitive
+# * Works with media files (images and videos), extension is case-insensitive
 # * If the date can not be extracted from file's name, the file will be renamed according to
 # either creation date, modification date or skipped altogether
 
@@ -8,18 +8,19 @@
 FLAG=s
 
 # Regex that matches timestamp in filename
-TIMESTAMP_REGEX="[0-9]{8}_[0-9]{6}"
+#TIMESTAMP_REGEX="[0-9]{8}_[0-9]{6}"
+TIMESTAMP_REGEX="[0-9]{14}"
 
-renamePicture () {
+renameFile () {
 	# Above regex will single out timestamp from name.
 	# Variables below define where in this string we have 
 	# every portion of date and time.
 	YEAR_POSITION=0
 	MONTH_POSITION=4
 	DAY_POSITION=6
-	HOUR_POSITION=9
-	MINUTE_POSITION=11
-	SECOND_POSITION=13
+	HOUR_POSITION=8
+	MINUTE_POSITION=10
+	SECOND_POSITION=12
 
 	echo
 	filename=$(basename -- "$1")
@@ -58,11 +59,11 @@ renamePicture () {
 if [[ -z "$1" ]] || [[ "$1" = "-h" ]] || [[ "$1" = "--help" ]] ;
 then
 	echo "Usage: $(basename "$0") <directory> FLAG"
-	echo "	where FLAG defines how this script treats images without"
+	echo "	where FLAG defines how this script treats media files without"
 	echo "	valid dates in their names. FLAG can be one of the following:"
-	echo "		c - set image name based on file creation date"
-	echo "		m - set image name based on file modification date"
-	echo "		s - skip these images"
+	echo "		c - set file name based on its creation date"
+	echo "		m - set file name based on its modification date"
+	echo "		s - skip these files"
 	echo "	FLAG is set to s by default."
 	exit 1
 fi
@@ -79,7 +80,9 @@ printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
 fullDirName="$(cd "$(dirname "$1")"; pwd)/$(basename "$1")"
 echo "Target directory: \"${fullDirName}\""
 
-countInDir="$(find "$fullDirName" -iname '*.jpg' | wc -l | tr -d '[:space:]')"
+countImg="$(find "$fullDirName" \( -iname '*.jpg' -o -iname '*.jpeg' \) | wc -l | tr -d '[:space:]')"
+countVid="$(find "$fullDirName" -iname '*.mts' | wc -l | tr -d '[:space:]')"
+countInDir=$(( $countImg + $countVid ))
 
 if ! [ -z ${2} ] ;
 then 
@@ -102,22 +105,23 @@ esac
 # Show a line of dashes
 printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
 
-message="Are you sure you want to rename ${countInDir} images"
+message="Are you sure you want to rename ${countInDir} media files? (${countImg} images and ${countVid} videos)"
 message="$message in \"${fullDirName}\"? (y or Y to proceed)`echo $'\n> '`"
 
 read -p "$message" -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-	export -f renamePicture
+	export -f renameFile
 	export FLAG
 	export TIMESTAMP_REGEX
 	export fullDirName
 	# Show a line of dashes
 	printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
 	
-	find "${fullDirName}" -type f -iname '*.jpg' -exec bash -c 'renamePicture "$0"' {} \;
-	find "${fullDirName}" -type f -iname '*.jpeg' -exec bash -c 'renamePicture "$0"' {} \;
+	find "${fullDirName}" -type f -iname '*.jpg' -exec bash -c 'renameFile "$0"' {} \;
+	find "${fullDirName}" -type f -iname '*.jpeg' -exec bash -c 'renameFile "$0"' {} \;
+    find "${fullDirName}" -type f -iname '*.mts' -exec bash -c 'renameFile "$0"' {} \;
 	
 	# Show a line of dashes
 	printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
