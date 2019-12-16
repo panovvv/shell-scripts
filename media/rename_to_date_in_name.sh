@@ -52,7 +52,8 @@ renameFile () {
 		s=${ts:$SECOND_POSITION:2}
 		finalName="${y}-${mo}-${d}_${h}-${mi}-${s}.${ext}"
 		echo "Processing \"$(basename "$1")\"... Found timestamp \"${ts}\"! Renaming to ${finalName}"
-		mv -vn "$1" "${fullDirName}/${finalName}"
+		DIR=$(dirname "$1")
+		mv -vn "$1" "${DIR}/${finalName}"
 	fi
 } 
 
