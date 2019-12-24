@@ -4,7 +4,7 @@
 TIMESTAMP_SOURCE=n
 
 # Regex that matches timestamp in filename
-TIMESTAMP_REGEX="[0-9]{8}_[0-9]{6}"
+TIMESTAMP_REGEX="[0-9]{14}"
 
 renameVideo () {
 	# Above regex will single out timestamp from name.
@@ -13,9 +13,9 @@ renameVideo () {
 	YEAR_POSITION=0
 	MONTH_POSITION=4
 	DAY_POSITION=6
-	HOUR_POSITION=9
-	MINUTE_POSITION=11
-	SECOND_POSITION=13
+	HOUR_POSITION=8
+	MINUTE_POSITION=10
+	SECOND_POSITION=12
 
 	echo
 	filename=$(basename -- "$1")
@@ -36,7 +36,8 @@ renameVideo () {
 				s=${ts:$SECOND_POSITION:2}
 				finalName="${y}-${mo}-${d}_${h}-${mi}-${s}.${ext}"
 				echo "Processing \"$(basename "$1")\"... Found timestamp \"${ts}\"! Renaming to ${finalName}"
-				mv -vn "$1" "${fullDirName}/${finalName}"
+				DIR=$(dirname "$1")
+				mv -vn "$1" "${DIR}/${finalName}"
 			fi
 			;;
 		c*)	finalName="$(stat -f %SB -t %Y-%m-%d_%H-%M-%S "$1").${ext}"
@@ -45,7 +46,8 @@ renameVideo () {
 				echo "Processing \"$(basename "$1")\"... This looks correct! No need to rename it."
 			else
 				echo "Processing \"$(basename "$1")\"... Will rename to \"${finalName}\""
-				mv -vn "$1" "${fullDirName}/${finalName}"
+				DIR=$(dirname "$1")
+				mv -vn "$1" "${DIR}/${finalName}"
 			fi
 			;;
 		m*)	finalName="$(date -r "$1" +"%Y-%m-%d_%H-%M-%S").${ext}"
@@ -54,7 +56,8 @@ renameVideo () {
 				echo "Processing \"$(basename "$1")\"... This looks correct! No need to rename it."
 			else
 				echo "Processing \"$(basename "$1")\"... Will rename to \"${finalName}\""
-				mv -vn "$1" "${fullDirName}/${finalName}"
+				DIR=$(dirname "$1")
+				mv -vn "$1" "${DIR}/${finalName}"
 			fi
 			;;
 		*)	echo "Bad TIMESTAMP_SOURCE specified!";
