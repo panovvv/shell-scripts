@@ -102,8 +102,8 @@ printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
 fullDirName="$(cd "$(dirname "$1")"; pwd)/$(basename "$1")"
 echo "Target directory: \"${fullDirName}\""
 
-countImg="$(find "$fullDirName" \( -iname '*.jpg' -o -iname '*.jpeg' \) | wc -l | tr -d '[:space:]')"
-countVid="$(find "$fullDirName" -iname '*.mts' | wc -l | tr -d '[:space:]')"
+countImg="$(find "$fullDirName" \( -iname '*.jpg' -or -iname '*.jpeg' \) | wc -l | tr -d '[:space:]')"
+countVid="$(find "$fullDirName" \( -iname '*.mp4' -or -iname '*.mts' -or -iname '*.mov' -or -iname '*.3gp' -or -iname '*.avi' -or -iname '*.m2ts' \) | wc -l | tr -d '[:space:]')"
 countInDir=$(( $countImg + $countVid ))
 
 if ! [ -z ${2} ] ;
@@ -148,7 +148,7 @@ then
 	# Show a line of dashes
 	printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
 	
-	find "${fullDirName}" -type f \( -iname "*.jpg" -or -iname "*.jpeg" -or -iname "*.mts" \) -exec bash -c 'sharearrays; renameFile "$0"' {} \;
+	find "${fullDirName}" -type f \( -iname "*.jpg" -or -iname "*.jpeg" -or -iname "*.mp4" -or -iname "*.mts" -or -iname "*.mov" -or -iname "*.3gp" -or -iname "*.avi" -or -iname "*.m2ts" \) -exec bash -c 'sharearrays; renameFile "$0"' {} \;
 	
 	# Show a line of dashes
 	printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
