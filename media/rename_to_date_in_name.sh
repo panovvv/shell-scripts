@@ -8,8 +8,18 @@
 FLAG=s
 
 # Regex that matches timestamp in filename
-#TIMESTAMP_REGEX="[0-9]{8}_[0-9]{6}"
-TIMESTAMP_REGEX="[0-9]{14}"
+function sharearrays() {
+	TIMESTAMP_REGEX=("[0-9]{14}" "[0-9]{8}_[0-9]{6}")
+	# Above regex will single out timestamp from name.
+	# Variables below define where in this string we have 
+	# every portion of date and time.
+	YEAR_POSITION=(0 0)
+	MONTH_POSITION=(4 4)
+	DAY_POSITION=(6 6)
+	HOUR_POSITION=(8 9)
+	MINUTE_POSITION=(10 11)
+	SECOND_POSITION=(12 13)
+}
 
 renameFile () {
 	# Above regex will single out timestamp from name.
@@ -27,10 +37,30 @@ renameFile () {
 	ext="${filename##*.}"
 	ext=`echo "$ext" | tr '[:upper:]' '[:lower:]'`;
 
-	ts=`echo $(basename "$1") | grep -oE $TIMESTAMP_REGEX`
+	found=false
+	for i in "${!TIMESTAMP_REGEX[@]}";
+	do
+		ts=`echo $(basename "$1") | grep -oE "${TIMESTAMP_REGEX[$i]}"`
 
-	#any datetime stamp will contain at least 14 difits: 8 for date and 6 for time
-	if [[ ${#ts} -lt 14 ]] 
+		#any datetime stamp will contain at least 14 digits: 8 for date and 6 for time
+		if [[ ${#ts} -gt 13 ]] 
+		then
+			y=${ts:${YEAR_POSITION[$i]}:4}
+			mo=${ts:${MONTH_POSITION[$i]}:2}
+			d=${ts:${DAY_POSITION[$i]}:2}
+			h=${ts:${HOUR_POSITION[$i]}:2}
+			mi=${ts:${MINUTE_POSITION[$i]}:2}
+			s=${ts:${SECOND_POSITION[$i]}:2}
+			finalName="${y}-${mo}-${d}_${h}-${mi}-${s}.${ext}"
+			echo "Processing \"$(basename "$1")\"... Found timestamp \"${ts}\"! Renaming to ${finalName}"
+			DIR=$(dirname "$1")
+			mv -vn "$1" "${DIR}/${finalName}"
+			found=true
+			break
+		fi
+	done
+
+	if [ "$found" = false ]
 	then
 		case "${FLAG}" in
 			c*)	echo "Processing \"$(basename "$1")\"... Can't find timestamp in name! Will set file name to \"$(stat -f %SB -t %Y-%m-%d_%H-%M-%S "$1").${ext}\""
@@ -43,19 +73,10 @@ renameFile () {
 			*)	echo "Bad FLAG specified!";
 				exit 1
 		esac
-	else
-		y=${ts:$YEAR_POSITION:4}
-		mo=${ts:$MONTH_POSITION:2}
-		d=${ts:$DAY_POSITION:2}
-		h=${ts:$HOUR_POSITION:2}
-		mi=${ts:$MINUTE_POSITION:2}
-		s=${ts:$SECOND_POSITION:2}
-		finalName="${y}-${mo}-${d}_${h}-${mi}-${s}.${ext}"
-		echo "Processing \"$(basename "$1")\"... Found timestamp \"${ts}\"! Renaming to ${finalName}"
-		DIR=$(dirname "$1")
-		mv -vn "$1" "${DIR}/${finalName}"
 	fi
-} 
+}
+
+sharearrays;
 
 if [[ -z "$1" ]] || [[ "$1" = "-h" ]] || [[ "$1" = "--help" ]] ;
 then
@@ -96,6 +117,12 @@ then
 	esac
 fi
 
+echo "Regular expressions to extract timestamp from file name:"
+for i in "${TIMESTAMP_REGEX[@]}"
+do
+	echo "$i"
+done
+
 case "${FLAG}" in
 	c*)		echo "Will set file name to CREATION DATE if date can't be extracted from filename";;
 	m*)		echo "Will set file name to MODIFICATION DATE if date can't be extracted from filename";;
@@ -113,6 +140,7 @@ read -p "$message" -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
+	export -f sharearrays
 	export -f renameFile
 	export FLAG
 	export TIMESTAMP_REGEX
@@ -120,9 +148,7 @@ then
 	# Show a line of dashes
 	printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
 	
-	find "${fullDirName}" -type f -iname '*.jpg' -exec bash -c 'renameFile "$0"' {} \;
-	find "${fullDirName}" -type f -iname '*.jpeg' -exec bash -c 'renameFile "$0"' {} \;
-    find "${fullDirName}" -type f -iname '*.mts' -exec bash -c 'renameFile "$0"' {} \;
+	find "${fullDirName}" -type f \( -iname "*.jpg" -or -iname "*.jpeg" -or -iname "*.mts" \) -exec bash -c 'sharearrays; renameFile "$0"' {} \;
 	
 	# Show a line of dashes
 	printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
