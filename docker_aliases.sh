@@ -1,8 +1,7 @@
 #!/bin/bash
 
 #
-# Aliases
-# (sorted alphabetically)
+# Docker aliases 
 #
 
 alias dps='docker ps'
@@ -21,3 +20,5 @@ alias dcup='docker-compose up -d'
 alias dcdw='docker-compose down'
 
 alias dkill='docker container stop $(docker container ls -aq) && docker container rm $(docker container ls -aq)'
+
+alias dclean='yes | docker system prune -a && yes | docker volume prune'
