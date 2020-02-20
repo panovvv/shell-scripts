@@ -7,18 +7,19 @@
 # How to treat files where date can't be extracted from name
 FLAG=s
 
-# Regex that matches timestamp in filename
 function sharearrays() {
-	TIMESTAMP_REGEX=("[0-9]{14}" "[0-9]{8}_[0-9]{6}")
+# Regex that matches timestamp in filename
+	TIMESTAMP_REGEX=("[0-9]{14}" "[0-9]{8}_[0-9]{6}" "[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]\.[0-9]{2}\.[0-9]{2} [aApP][mM]")
 	# Above regex will single out timestamp from name.
 	# Variables below define where in this string we have 
 	# every portion of date and time.
-	YEAR_POSITION=(0 0)
-	MONTH_POSITION=(4 4)
-	DAY_POSITION=(6 6)
-	HOUR_POSITION=(8 9)
-	MINUTE_POSITION=(10 11)
-	SECOND_POSITION=(12 13)
+	YEAR_POSITION=(0 0 0)
+	MONTH_POSITION=(4 4 5)
+	DAY_POSITION=(6 6 8)
+	HOUR_POSITION=(8 9 10)
+	HOUR_MODIFIER_POSITION=(-1 -1 19)
+	MINUTE_POSITION=(10 11 13)
+	SECOND_POSITION=(12 13 16)
 }
 
 renameFile () {
@@ -49,6 +50,17 @@ renameFile () {
 			mo=${ts:${MONTH_POSITION[$i]}:2}
 			d=${ts:${DAY_POSITION[$i]}:2}
 			h=${ts:${HOUR_POSITION[$i]}:2}
+			if [[ ${HOUR_MODIFIER_POSITION[$i]} -gt -1 ]] 
+			then
+				mod=${ts:${HOUR_MODIFIER_POSITION[$i]}:2}
+				mod=`echo "$mod" | tr '[:lower:]' '[:upper:]'`;
+				if [[ "${mod:0:1}" == "P" ]]
+				then
+					h=$((h + 12))
+				else
+					h=${h/ /0}
+				fi
+			fi
 			mi=${ts:${MINUTE_POSITION[$i]}:2}
 			s=${ts:${SECOND_POSITION[$i]}:2}
 			finalName="${y}-${mo}-${d}_${h}-${mi}-${s}.${ext}"

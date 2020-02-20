@@ -82,7 +82,7 @@ printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
 fullDirName="$(cd "$(dirname "$1")"; pwd)/$(basename "$1")"
 echo "Target directory: \"${fullDirName}\""
 
-countInDir="$(find "$fullDirName" -iname '*.jpg' | wc -l | tr -d '[:space:]')"
+countInDir="$(find "$fullDirName" \( -iname '*.jpg' -or -iname '*.jpeg' \) | wc -l | tr -d '[:space:]')"
 
 if ! [ -z ${2} ] ;
 then 
