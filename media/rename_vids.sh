@@ -21,13 +21,14 @@ renameVideo () {
   echo
   filename=$(basename -- "$1")
   ext="${filename##*.}"
-  ext=`echo "$ext" | tr '[:upper:]' '[:lower:]'`;
+  ext=$(echo "$ext" | tr '[:upper:]' '[:lower:]');
+
   case "${TIMESTAMP_SOURCE}" in
     n*)
       found=false
       for i in "${!TIMESTAMP_REGEX[@]}";
       do
-        ts=`echo $(basename "$1") | grep -oE "${TIMESTAMP_REGEX[$i]}"`
+        ts=$(basename "$1" | grep -oE "${TIMESTAMP_REGEX[$i]}")
 
         #any datetime stamp will contain at least 14 digits: 8 for date and 6 for time
           if [[ ${#ts} -gt 13 ]]

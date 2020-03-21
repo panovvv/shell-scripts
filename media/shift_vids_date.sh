@@ -11,7 +11,7 @@ TIMESTAMP_TO_CHANGE=c
 
 showUsage () {
   echo "Usage:"
-  echo "	`basename $0` <directory> SIGN SHIFT_BY TIMESTAMP_TO_CHANGE"
+  echo "	$(basename "$0") <directory> SIGN SHIFT_BY TIMESTAMP_TO_CHANGE"
   echo "	SIGN can be either 'add' or 'subtract', SHIFT_BY is the number of hours to add or subtract"
   echo "	TIMESTAMP_TO_CHANGE is 'c' to shift creation date or 'm' for modification date"
   echo "IMPORTANT CAVEATS:"
@@ -20,10 +20,10 @@ showUsage () {
   echo "	from modification date causes creation date to become equal to mod. date - OS fixes the logic"
   echo "	fault for you."
   echo "Example usage:"
-  echo "	`basename $0` ~/114___04/vids/ subtract 1 m"
+  echo "	$(basename "$0") ~/114___04/vids/ subtract 1 m"
   echo "	shift file modification date back by 1 hour"
   echo
-  echo "	`basename $0` ~/114___04/vids/ add 5 c"
+  echo "	$(basename "$0") ~/114___04/vids/ add 5 c"
   echo "	shift file creation date forward by 5 hours"
 }
 
