@@ -9,59 +9,59 @@
 FLAG=s
 
 renamePicture () {
-	dat="$(exiftool -p '$dateTimeOriginal' -q -f "$1" -d %Y-%m-%d_%H-%M-%S)"
-	if [[ ${#dat} -lt 19 ]]
-	then
-		case "${FLAG}" in
-			c*)	finalName="$(stat -f %SB -t %Y-%m-%d_%H-%M-%S "$1").$2"
-				if [[ "${finalName}" = "$(basename "$1")" ]] ;
-				then
-					echo "Processing \"$(basename "$1")\"... This looks correct! No need to rename it."
-				else
-					echo "Processing \"$(basename "$1")\"... No DateTimeOriginal found! Will rename to \"${finalName}\""
-					mv -vn "$1" "${fullDirName}/${finalName}"
-				fi
-				;;
-			m*)	finalName="$(date -r "$1" +"%Y-%m-%d_%H-%M-%S").$2"
-				if [[ "${finalName}" = "$(basename "$1")" ]] ;
-				then
-					echo "Processing \"$(basename "$1")\"... This looks correct! No need to rename it."
-				else
-					echo "Processing \"$(basename "$1")\"... No DateTimeOriginal found! Will rename to \"${finalName}\""
-					mv -vn "$1" "${fullDirName}/${finalName}"
-				fi
-				;;
-			s*)	echo "Processing \"$(basename "$1")\"... No DateTimeOriginal found! Skipping...";;
-			*)	echo "Bad FLAG specified!";
-				exit 1
-		esac
-	else
-		if [[ "${dat}.$2" = "$(basename "$1")" ]] ;
-		then
-			echo "Processing \"$(basename "$1")\"... This looks correct! No need to rename it."
-		else
-			echo "Processing \"$(basename "$1")\"... Will rename to \"${dat}.$2\""
-			jhead -n%Y-%m-%d_%H-%M-%S "$1"
-		fi
-	fi
+  dat="$(exiftool -p '$dateTimeOriginal' -q -f "$1" -d %Y-%m-%d_%H-%M-%S)"
+  if [[ ${#dat} -lt 19 ]]
+  then
+    case "${FLAG}" in
+      c*)	finalName="$(stat -f %SB -t %Y-%m-%d_%H-%M-%S "$1").$2"
+        if [[ "${finalName}" = "$(basename "$1")" ]] ;
+        then
+          echo "Processing \"$(basename "$1")\"... This looks correct! No need to rename it."
+        else
+          echo "Processing \"$(basename "$1")\"... No DateTimeOriginal found! Will rename to \"${finalName}\""
+          mv -vn "$1" "${fullDirName}/${finalName}"
+        fi
+        ;;
+      m*)	finalName="$(date -r "$1" +"%Y-%m-%d_%H-%M-%S").$2"
+        if [[ "${finalName}" = "$(basename "$1")" ]] ;
+        then
+          echo "Processing \"$(basename "$1")\"... This looks correct! No need to rename it."
+        else
+          echo "Processing \"$(basename "$1")\"... No DateTimeOriginal found! Will rename to \"${finalName}\""
+          mv -vn "$1" "${fullDirName}/${finalName}"
+        fi
+        ;;
+      s*)	echo "Processing \"$(basename "$1")\"... No DateTimeOriginal found! Skipping...";;
+      *)	echo "Bad FLAG specified!";
+        exit 1
+    esac
+  else
+    if [[ "${dat}.$2" = "$(basename "$1")" ]] ;
+    then
+      echo "Processing \"$(basename "$1")\"... This looks correct! No need to rename it."
+    else
+      echo "Processing \"$(basename "$1")\"... Will rename to \"${dat}.$2\""
+      jhead -n%Y-%m-%d_%H-%M-%S "$1"
+    fi
+  fi
 } 
 
 if [[ -z "$1" ]] || [[ "$1" = "-h" ]] || [[ "$1" = "--help" ]] ;
 then
-	echo "Usage: $(basename "$0") <directory> FLAG"
-	echo "	where FLAG defines how this script treats images without"
-	echo "	DateTimeOriginal. FLAG can be one of the following:"
-	echo "		c - set image name based on file creation date"
-	echo "		m - set image name based on file modification date"
-	echo "		s - skip these images"
-	echo "	FLAG is set to s by default."
-	exit 1
+  echo "Usage: $(basename "$0") <directory> FLAG"
+  echo "	where FLAG defines how this script treats images without"
+  echo "	DateTimeOriginal. FLAG can be one of the following:"
+  echo "		c - set image name based on file creation date"
+  echo "		m - set image name based on file modification date"
+  echo "		s - skip these images"
+  echo "	FLAG is set to s by default."
+  exit 1
 fi
 
 if ! [ -d "$1" ] ;
 then 
-	echo "Please provide a valid directory!"
-	exit 1
+  echo "Please provide a valid directory!"
+  exit 1
 fi
 
 if ! [[ -x "$(command -v jhead)" ]] ;
@@ -86,20 +86,20 @@ countInDir="$(find "$fullDirName" \( -iname '*.jpg' -or -iname '*.jpeg' \) | wc 
 
 if ! [ -z ${2} ] ;
 then 
-	echo "Parsing user-provided FLAG..."
-	case "${2}" in
-		c*)	FLAG=$2;;
-		m*)	FLAG=$2;;
-		s*)	FLAG=$2;;
-		*)	echo "Bad FLAG specified! Defaulting to s (keep old name)"
-	esac
+  echo "Parsing user-provided FLAG..."
+  case "${2}" in
+    c*)	FLAG=$2;;
+    m*)	FLAG=$2;;
+    s*)	FLAG=$2;;
+    *)	echo "Bad FLAG specified! Defaulting to s (keep old name)"
+  esac
 fi
 
 case "${FLAG}" in
-	c*)		echo "Will set file name to CREATION DATE if no DateTimeOriginal found";;
-	m*)		echo "Will set file name to MODIFICATION DATE if no DateTimeOriginal found";;
-	s*)		echo "Will KEEP OLD file name if no DateTimeOriginal found";;
-	*)		echo "Bad FLAG specified!"; exit 1
+  c*)		echo "Will set file name to CREATION DATE if no DateTimeOriginal found";;
+  m*)		echo "Will set file name to MODIFICATION DATE if no DateTimeOriginal found";;
+  s*)		echo "Will KEEP OLD file name if no DateTimeOriginal found";;
+  *)		echo "Bad FLAG specified!"; exit 1
 esac
 
 # Show a line of dashes
@@ -112,16 +112,16 @@ read -p "$message" -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-	export -f renamePicture
-	export FLAG
-	export fullDirName
-	# Show a line of dashes
-	printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
-	
-	find "${fullDirName}" -type f -iname '*.jpg' -exec bash -c 'renamePicture "$0" jpg' {} \;
-	find "${fullDirName}" -type f -iname '*.jpeg' -exec bash -c 'renamePicture "$0" jpeg' {} \;
-	
-	# Show a line of dashes
-	printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+  export -f renamePicture
+  export FLAG
+  export fullDirName
+  # Show a line of dashes
+  printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
+
+  find "${fullDirName}" -type f -iname '*.jpg' -exec bash -c 'renamePicture "$0" jpg' {} \;
+  find "${fullDirName}" -type f -iname '*.jpeg' -exec bash -c 'renamePicture "$0" jpeg' {} \;
+
+  # Show a line of dashes
+  printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
 fi
 
