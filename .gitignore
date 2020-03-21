@@ -1,3 +1,6 @@
 # OS-specific GUI related files
 .DS_Store
 desktop.ini
+
+# IDE files
+.idea/
