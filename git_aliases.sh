@@ -1,11 +1,15 @@
 #!/bin/bash
 
+# Source: https://github.com/ohmyzsh/ohmyzsh/blob/master/plugins/git/git.plugin.zsh
+
 #
 # Aliases
 # (sorted alphabetically)
 #
 
 alias g='git'
+
+
 
 alias ga='git add'
 alias gaa='git add --all'
@@ -14,11 +18,23 @@ alias gau='git add --update'
 alias gav='git add --verbose'
 alias gap='git apply'
 
+
+
 alias gb='git branch'
+
+# List all local+remote branches
 alias gba='git branch -a'
+
+# Delete branch
 alias gbd='git branch -d'
+
+# Delete all merged branches locally
 alias gbda='git branch --no-color --merged | command grep -vE "^(\*|\s*(master|develop|dev)\s*$)" | command xargs -n 1 git branch -d'
+
+# Force delete
 alias gbD='git branch -D'
+
+
 alias gbl='git blame -b -w'
 alias gbnm='git branch --no-merged'
 alias gbr='git branch --remote'
@@ -63,8 +79,8 @@ alias gdw='git diff --word-diff'
 gdv() { git diff -w "$@" | view -; }
 
 alias gf='git fetch'
-alias gfa='git fetch --all --prune'
-alias gfo='git fetch origin'
+alias gfa='git fetch --all --prune --verbose'
+alias gfo='git fetch origin --verbose'
 
 function gfg() { git ls-files | grep $@; }
 
@@ -128,6 +144,7 @@ alias git-svn-dcommit-push='git svn dcommit && git push github master:svntrunk'
 
 alias gk='\gitk --all --branches'
 alias gke='\gitk --all $(git log -g --pretty=%h)'
+
 
 alias gl='git pull'
 alias glg='git log --stat'

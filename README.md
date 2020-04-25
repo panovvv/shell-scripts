@@ -1,14 +1,18 @@
 # Utility shell scripts
 
-* docker_aliases.sh, git_aliases.sh
+* docker_aliases.sh, git_aliases.sh, misc_aliases.sh
 
 Aliases I use to speed up interactions with Docker and Git.
+
+Git aliases taken from https://github.com/ohmyzsh/ohmyzsh/blob/master/plugins/git/git.plugin.zsh
+with some simplifications.
 
 Usage:
 #### **`~/.bash_profile`**
 ``` bash
 . /bla/shell-scripts-git/docker_aliases.sh
 . /bla/shell-scripts-git/git_aliases.sh
+. /bla/shell-scripts-git/misc_aliases.sh
 ```
 
 * media/
