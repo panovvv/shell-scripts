@@ -2,5 +2,6 @@
 .DS_Store
 desktop.ini
 
-# IDE files
+# IntelliJ IDEA
 .idea/
+stale_outputs_checked
