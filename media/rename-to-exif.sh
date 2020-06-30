@@ -40,8 +40,14 @@ renamePicture () {
     then
       echo "Processing \"$(basename "$1")\"... This looks correct! No need to rename it."
     else
-      echo "Processing \"$(basename "$1")\"... Will rename to \"${dat}.$2\""
-      jhead -n%Y-%m-%d_%H-%M-%S "$1"
+      if [[ "$2" = "jpeg" ]] || [[ "$2" = "jpg" ]] ;
+      then
+        echo "Processing \"$(basename "$1")\"... Will rename to \"${dat}.$2\""
+        jhead -n%Y-%m-%d_%H-%M-%S "$1"
+      else
+        echo "Processing RAW \"$(basename "$1")\"... Will rename to \"${dat}.$2\""
+        mv -vn "$1" "${fullDirName}/${dat}.$2"
+      fi
     fi
   fi
 } 
@@ -82,7 +88,7 @@ printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
 fullDirName="$(cd "$(dirname "$1")"; pwd)/$(basename "$1")"
 echo "Target directory: \"${fullDirName}\""
 
-countInDir="$(find "$fullDirName" \( -iname '*.jpg' -or -iname '*.jpeg' \) | wc -l | tr -d '[:space:]')"
+countInDir="$(find "$fullDirName" \( -iname '*.jpg' -or -iname '*.jpeg' -or -iname '*.raw' -or -iname '*.arw' \) | wc -l | tr -d '[:space:]')"
 
 if ! [ -z ${2} ] ;
 then 
@@ -120,6 +126,8 @@ then
 
   find "${fullDirName}" -type f -iname '*.jpg' -exec bash -c 'renamePicture "$0" jpg' {} \;
   find "${fullDirName}" -type f -iname '*.jpeg' -exec bash -c 'renamePicture "$0" jpeg' {} \;
+  find "${fullDirName}" -type f -iname '*.raw' -exec bash -c 'renamePicture "$0" raw' {} \;
+  find "${fullDirName}" -type f -iname '*.arw' -exec bash -c 'renamePicture "$0" arw' {} \;
 
   # Show a line of dashes
   printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
