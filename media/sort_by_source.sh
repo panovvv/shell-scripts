@@ -6,8 +6,10 @@
 # Unclassified pictures are moved to a "misc" folder.
 
 sortByCameraModel () {
+  # When camera info present: "Make model"
+  # When camera info present: "- -" (hence < 4 characters limit)
   folderName="$(exiftool -p '$make $model' -q -f "$1")"
-  if [[ ${#folderName} -lt 1 ]]
+  if [[ ${#folderName} -lt 4 ]]
   then
     echo "Processing \"$(basename "$1")\"... No camera info in EXIF! Moving to /misc"
     mkdir -p "${fullDirName}/misc/"
