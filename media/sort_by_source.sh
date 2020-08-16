@@ -43,7 +43,7 @@ printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
 fullDirName="$(cd "$(dirname "$1")"; pwd)/$(basename "$1")"
 echo "Target directory: \"${fullDirName}\""
 
-countInDir="$(find "$fullDirName" \( -iname '*.jpg' -or -iname '*.jpeg' -or -iname '*.raw' -or -iname '*.arw' \) | wc -l | tr -d '[:space:]')"
+countInDir="$(find "$fullDirName" -maxdepth 1 \( -iname '*.jpg' -or -iname '*.jpeg' -or -iname '*.raw' -or -iname '*.arw' \) | wc -l | tr -d '[:space:]')"
 
 # Show a line of dashes
 printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
@@ -61,10 +61,10 @@ then
   # Show a line of dashes
   printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
 
-  find "${fullDirName}" -type f -iname '*.jpg' -exec bash -c 'sortByCameraModel "$0"' {} \;
-  find "${fullDirName}" -type f -iname '*.jpeg' -exec bash -c 'sortByCameraModel "$0"' {} \;
-  find "${fullDirName}" -type f -iname '*.raw' -exec bash -c 'sortByCameraModel "$0"' {} \;
-  find "${fullDirName}" -type f -iname '*.arw' -exec bash -c 'sortByCameraModel "$0"' {} \;
+  find "${fullDirName}" -maxdepth 1 -type f -iname '*.jpg' -exec bash -c 'sortByCameraModel "$0"' {} \;
+  find "${fullDirName}" -maxdepth 1 -type f -iname '*.jpeg' -exec bash -c 'sortByCameraModel "$0"' {} \;
+  find "${fullDirName}" -maxdepth 1 -type f -iname '*.raw' -exec bash -c 'sortByCameraModel "$0"' {} \;
+  find "${fullDirName}" -maxdepth 1 -type f -iname '*.arw' -exec bash -c 'sortByCameraModel "$0"' {} \;
 
   # Show a line of dashes
   printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
