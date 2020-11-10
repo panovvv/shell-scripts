@@ -16,9 +16,9 @@ then
   exit 1
 fi
 
-if ! [[ -x "$(command -v id3v2)" ]] ;
+if ! [[ -x "$(command -v eyeD3)" ]] ;
 then
-  echo 'This script requires id3v2 to be installed and in PATH'
+  echo 'This script requires eyeD3 to be installed and in PATH (pip3 install eyed3)'
   exit 1
 fi
 
@@ -51,7 +51,7 @@ then
         ARTIST=$(echo "${WITHOUT_EXT}" | awk -F "${DASH1}|${DASH2}" '{print $1}')
         SONG=$(echo "${WITHOUT_EXT}" | awk -F "${DASH1}|${DASH2}" '{print $2}')
         echo "Processing $WITH_EXT... Artist: ${ARTIST}, title: ${SONG}"
-        id3v2 -a "${ARTIST}" -t "${SONG}" "$i"
+        eyeD3 -a "${ARTIST}" -t "${SONG}" "$i"
         if echo "${WITHOUT_EXT}" | grep -q "${DASH2}"; then
           echo "Found non-standard dash in ${WITH_EXT}, attempting to fix that..."
           mv -vn "$i" "${i/$DASH2/$DASH1}"
