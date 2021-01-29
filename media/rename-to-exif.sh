@@ -8,8 +8,13 @@
 
 FLAG=s
 
-renamePicture () {
-  dat="$(exiftool -p '$dateTimeOriginal' -q -f "$1" -d %Y-%m-%d_%H-%M-%S)"
+renameMedia () {
+  if [[ "$2" = "mp4" ]] ;
+  then
+    dat="$(exiftool -p '$mediaCreateDate' -q -f "$1" -d %Y-%m-%d_%H-%M-%S)"
+  else
+    dat="$(exiftool -p '$dateTimeOriginal' -q -f "$1" -d %Y-%m-%d_%H-%M-%S)"
+  fi
   if [[ ${#dat} -lt 19 ]]
   then
     case "${FLAG}" in
@@ -45,12 +50,12 @@ renamePicture () {
         echo "Processing \"$(basename "$1")\"... Will rename to \"${dat}.$2\""
         jhead -n%Y-%m-%d_%H-%M-%S "$1"
       else
-        echo "Processing RAW \"$(basename "$1")\"... Will rename to \"${dat}.$2\""
+        echo "Processing RAW or video \"$(basename "$1")\"... Will rename to \"${dat}.$2\""
         mv -vn "$1" "${fullDirName}/${dat}.$2"
       fi
     fi
   fi
-} 
+}
 
 if [[ -z "$1" ]] || [[ "$1" = "-h" ]] || [[ "$1" = "--help" ]] ;
 then
@@ -89,6 +94,7 @@ fullDirName="$(cd "$(dirname "$1")"; pwd)/$(basename "$1")"
 echo "Target directory: \"${fullDirName}\""
 
 countInDir="$(find "$fullDirName" \( -iname '*.jpg' -or -iname '*.jpeg' -or -iname '*.raw' -or -iname '*.arw' \) | wc -l | tr -d '[:space:]')"
+countInDirVid="$(find "$fullDirName" -iname '*.mp4' | wc -l | tr -d '[:space:]')"
 
 if ! [ -z ${2} ] ;
 then 
@@ -111,23 +117,24 @@ esac
 # Show a line of dashes
 printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
 
-message="Are you sure you want to rename ${countInDir} images"
+message="Are you sure you want to rename ${countInDir} image(s) and ${countInDirVid} video(s)"
 message="$message in \"${fullDirName}\"? (y or Y to proceed)`echo $'\n> '`"
 
 read -p "$message" -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-  export -f renamePicture
+  export -f renameMedia
   export FLAG
   export fullDirName
   # Show a line of dashes
   printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
 
-  find "${fullDirName}" -type f -iname '*.jpg' -exec bash -c 'renamePicture "$0" jpg' {} \;
-  find "${fullDirName}" -type f -iname '*.jpeg' -exec bash -c 'renamePicture "$0" jpeg' {} \;
-  find "${fullDirName}" -type f -iname '*.raw' -exec bash -c 'renamePicture "$0" raw' {} \;
-  find "${fullDirName}" -type f -iname '*.arw' -exec bash -c 'renamePicture "$0" arw' {} \;
+  find "${fullDirName}" -type f -iname '*.jpg' -exec bash -c 'renameMedia "$0" jpg' {} \;
+  find "${fullDirName}" -type f -iname '*.jpeg' -exec bash -c 'renameMedia "$0" jpeg' {} \;
+  find "${fullDirName}" -type f -iname '*.raw' -exec bash -c 'renameMedia "$0" raw' {} \;
+  find "${fullDirName}" -type f -iname '*.arw' -exec bash -c 'renameMedia "$0" arw' {} \;
+  find "${fullDirName}" -type f -iname '*.mp4' -exec bash -c 'renameMedia "$0" mp4' {} \;
 
   # Show a line of dashes
   printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
