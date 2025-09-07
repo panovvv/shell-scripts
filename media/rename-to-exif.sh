@@ -12,6 +12,10 @@ renameMedia () {
   if [[ "$2" = "mp4" ]] ;
   then
     dat="$(exiftool -p '$mediaCreateDate' -q -f "$1" -d %Y-%m-%d_%H-%M-%S)"
+    if [[ ${#dat} -lt 19 ]]
+    then
+      echo
+    fi
   else
     dat="$(exiftool -p '$dateTimeOriginal' -q -f "$1" -d %Y-%m-%d_%H-%M-%S)"
   fi

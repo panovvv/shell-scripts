@@ -17,6 +17,7 @@ function sharearrays() {
     "[0-9]{4}-[0-9]{2}-[0-9]{2} at [0-9]\.[0-9]{2}\.[0-9]{2} [aApP][mM]"
     "[0-9]{4}-[0-9]{2}-[0-9]{2} at [0-9]{2}\.[0-9]{2}\.[0-9]{2} [aApP][mM]"
     "[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}\.[0-9]{2}\.[0-9]{2}"
+    "[0-9]{8}-[0-9]{6}"
   )
 
   # This is what we show on each script run to demonstrate what kind of timestamps we can find.
@@ -28,6 +29,7 @@ function sharearrays() {
     "2019-12-24 at 6.03.56 am"
     "2019-12-24 at 10.03.56 pm"
     "2019-12-24 22.03.56"
+    "20250905-213240"
   )
   TIMESTAMP_EXAMPLES_RESOLVED=(
     "2019-12-24_19-03-56"
@@ -37,19 +39,20 @@ function sharearrays() {
     "2019-12-24_06-03-56"
     "2019-12-24_22-03-56"
     "2019-12-24_22-03-56"
+    "2025-09-05_21-32-40"
   )
 
   # Above regexes will single out timestamp from name.
   # Variables below define where in this string we have
   # every portion of date and time.
-  YEAR_POSITION=(0 0 0 0 0 0 0)
-  MONTH_POSITION=(4 4 5 5 5 5 5)
-  DAY_POSITION=(6 6 8 8 8 8 8)
-  HOUR_POSITION=(8 9 11 11 14 14 11)
-  HOUR_NUM_DIGITS=(2 2 1 2 1 2 2)
-  HOUR_MODIFIER_POSITION=(-1 -1 19 20 22 23 -1)
-  MINUTE_POSITION=(10 11 13 14 16 17 14)
-  SECOND_POSITION=(12 13 16 17 19 20 17)
+  YEAR_POSITION=(0 0 0 0 0 0 0 0)
+  MONTH_POSITION=(4 4 5 5 5 5 5 4)
+  DAY_POSITION=(6 6 8 8 8 8 8 6)
+  HOUR_POSITION=(8 9 11 11 14 14 11 9)
+  HOUR_NUM_DIGITS=(2 2 1 2 1 2 2 2)
+  HOUR_MODIFIER_POSITION=(-1 -1 19 20 22 23 -1 -1)
+  MINUTE_POSITION=(10 11 13 14 16 17 14 11)
+  SECOND_POSITION=(12 13 16 17 19 20 17 13)
 }
 
 renameFile() {

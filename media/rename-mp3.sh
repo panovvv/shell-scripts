@@ -2,6 +2,7 @@
 
 DASH1=" - "
 DASH2=" – "
+DASH3=" — "
 
 if [[ -z "$1" ]] || [[ "$1" = "-h" ]] || [[ "$1" = "--help" ]] ;
 then
@@ -25,7 +26,7 @@ fi
 # Show a line of dashes
 printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
 
-fullDirName="$(cd "$(dirname "$1")"; pwd)/$(basename "$1")"
+fullDirName="$(cd "$(dirname "$1")" || exit; pwd)/$(basename "$1")"
 echo "Target directory: \"${fullDirName}\""
 
 countInDir="$(find "$fullDirName" -iname '*.mp3' | wc -l | tr -d '[:space:]')"
@@ -47,14 +48,18 @@ then
   for i in "${fullDirName}/"*.mp3; do
       WITH_EXT=$(basename "$i")
       WITHOUT_EXT="${WITH_EXT%.*}"
-      if echo "${WITHOUT_EXT}" | grep -q "${DASH1}\|${DASH2}"; then
-        ARTIST=$(echo "${WITHOUT_EXT}" | awk -F "${DASH1}|${DASH2}" '{print $1}')
-        SONG=$(echo "${WITHOUT_EXT}" | awk -F "${DASH1}|${DASH2}" '{print $2}')
+      if echo "${WITHOUT_EXT}" | grep -q "${DASH1}\|${DASH2}\|${DASH3}"; then
+        ARTIST=$(echo "${WITHOUT_EXT}" | awk -F "${DASH1}|${DASH2}|${DASH3}" '{print $1}')
+        SONG=$(echo "${WITHOUT_EXT}" | awk -F "${DASH1}|${DASH2}|${DASH3}" '{print $2}')
         echo "Processing $WITH_EXT... Artist: ${ARTIST}, title: ${SONG}"
-        eyeD3 -a "${ARTIST}" -t "${SONG}" "$i"
+        eyeD3 --to-v2.4 --remove-all -a "${ARTIST}" -t "${SONG}" "$i"
         if echo "${WITHOUT_EXT}" | grep -q "${DASH2}"; then
           echo "Found non-standard dash in ${WITH_EXT}, attempting to fix that..."
           mv -vn "$i" "${i/$DASH2/$DASH1}"
+        fi
+        if echo "${WITHOUT_EXT}" | grep -q "${DASH3}"; then
+          echo "Found non-standard dash in ${WITH_EXT}, attempting to fix that..."
+          mv -vn "$i" "${i/$DASH3/$DASH1}"
         fi
       else
         echo "Processing $WITH_EXT... Can't find ${DASH1} in name!"

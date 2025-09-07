@@ -10,5 +10,5 @@ It should be invoked like this:
 3) Follow the instructions that this script issues. Good luck!
     
 Refer to
-https://www.shortn0tes.com/2015/11/vocore-tutorial-blinking-led-using.html
+https://www.shortn0tes.blogspot.com/2015/11/vocore-tutorial-blinking-led-using.html
 for more details.
