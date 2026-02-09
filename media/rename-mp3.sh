@@ -17,9 +17,9 @@ then
   exit 1
 fi
 
-if ! [[ -x "$(command -v id3v2)" ]] ;
+if ! [[ -x "$(command -v ffmpeg)" ]] ;
 then
-  echo 'This script requires id3v2 to be installed and in PATH (sudo pacman -S id3v2)'
+  echo 'This script requires ffmpeg to be installed and in PATH (sudo pacman -S ffmpeg)'
   exit 1
 fi
 
@@ -52,8 +52,10 @@ then
         ARTIST=$(echo "${WITHOUT_EXT}" | awk -F "${DASH1}|${DASH2}|${DASH3}" '{print $1}')
         SONG=$(echo "${WITHOUT_EXT}" | awk -F "${DASH1}|${DASH2}|${DASH3}" '{print $2}')
         echo "Processing $WITH_EXT... Artist: ${ARTIST}, title: ${SONG}"
-	      id3v2 --delete-all "$i"
-        id3v2 --artist "${ARTIST}" --song "${SONG}" "$i"
+        TMP_FILE="${i%.mp3}.tmp.mp3"
+        ffmpeg -y -i "$i" -map 0:a -c:a copy -map_metadata -1 \
+          -metadata artist="${ARTIST}" -metadata title="${SONG}" \
+          -id3v2_version 4 -write_id3v1 0 "$TMP_FILE" && mv -f "$TMP_FILE" "$i"
         if echo "${WITHOUT_EXT}" | grep -q "${DASH2}"; then
           echo "Found non-standard dash in ${WITH_EXT}, attempting to fix that..."
           mv -vn "$i" "${i/$DASH2/$DASH1}"
