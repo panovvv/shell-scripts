@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# * Works with JPG files, extension is case-insensitive
+# * Works with JPG and HEIC files, extension is case-insensitive
 # * Thanks to jhead, conflicts because of pictures taken at the same time
 #   will be resolved by adding postfix automatically.
 # * If EXIF date is empty, the file will be renamed according to
@@ -9,7 +9,7 @@
 FLAG=s
 
 renameMedia () {
-  if [[ "$2" = "mp4" ]] ;
+  if [[ "$2" = "mp4" ]] || [[ "$2" = "mov" ]] ;
   then
     dat="$(exiftool -p '$mediaCreateDate' -q -f "$1" -d %Y-%m-%d_%H-%M-%S)"
     if [[ ${#dat} -lt 19 ]]
@@ -97,8 +97,8 @@ printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
 fullDirName="$(cd "$(dirname "$1")"; pwd)/$(basename "$1")"
 echo "Target directory: \"${fullDirName}\""
 
-countInDir="$(find "$fullDirName" \( -iname '*.jpg' -or -iname '*.jpeg' -or -iname '*.raw' -or -iname '*.arw' \) | wc -l | tr -d '[:space:]')"
-countInDirVid="$(find "$fullDirName" -iname '*.mp4' | wc -l | tr -d '[:space:]')"
+countInDir="$(find "$fullDirName" \( -iname '*.jpg' -or -iname '*.jpeg' -or -iname '*.raw' -or -iname '*.arw' -or -iname '*.heic' \) | wc -l | tr -d '[:space:]')"
+countInDirVid="$(find "$fullDirName" \( -iname '*.mp4' -or -iname '*.mov' \) | wc -l | tr -d '[:space:]')"
 
 if ! [ -z ${2} ] ;
 then 
@@ -138,7 +138,9 @@ then
   find "${fullDirName}" -type f -iname '*.jpeg' -exec bash -c 'renameMedia "$0" jpeg' {} \;
   find "${fullDirName}" -type f -iname '*.raw' -exec bash -c 'renameMedia "$0" raw' {} \;
   find "${fullDirName}" -type f -iname '*.arw' -exec bash -c 'renameMedia "$0" arw' {} \;
+  find "${fullDirName}" -type f -iname '*.heic' -exec bash -c 'renameMedia "$0" heic' {} \;
   find "${fullDirName}" -type f -iname '*.mp4' -exec bash -c 'renameMedia "$0" mp4' {} \;
+  find "${fullDirName}" -type f -iname '*.mov' -exec bash -c 'renameMedia "$0" mov' {} \;
 
   # Show a line of dashes
   printf '%*s\n' "${COLUMNS:-$(tput cols)}" '' | tr ' ' -
